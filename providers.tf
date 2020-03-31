@@ -20,18 +20,19 @@ provider "google" {
 
 data "google_client_config" "current" {}
 
-//provider "kubernetes" {
-//  host                   = module.gke.host
-//  cluster_ca_certificate = base64decode(module.gke.cluster_ca_certificate)
-//  token                  = data.google_client_config.current.access_token
-//  load_config_file       = false
-//}
-//
-//provider "helm" {
-//  kubernetes {
-//    host = module.gke.host
-//    cluster_ca_certificate = base64decode(module.gke.cluster_ca_certificate)
-//    token                  = data.google_client_config.current.access_token
-//    load_config_file       = false
-//  }
-//}
+provider "kubernetes" {
+  cluster_ca_certificate = base64decode(google_container_cluster.apps.master_auth[0].cluster_ca_certificate)
+  host                   = google_container_cluster.apps.endpoint
+  token                  = data.google_client_config.current.access_token
+  load_config_file       = false
+}
+
+provider "helm" {
+  version = "~>1.1.1"
+  kubernetes {
+    cluster_ca_certificate = base64decode(google_container_cluster.apps.master_auth[0].cluster_ca_certificate)
+    host                   = google_container_cluster.apps.endpoint
+    token                  = data.google_client_config.current.access_token
+    load_config_file       = false
+  }
+}
