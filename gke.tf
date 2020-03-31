@@ -24,7 +24,12 @@ resource "google_container_node_pool" "apps" {
   name       = "preemptible"
   location   = var.google_zone
   cluster    = google_container_cluster.apps.name
-  node_count = 1
+  initial_node_count = 1
+
+  autoscaling {
+    min_node_count = 0
+    max_node_count = 50
+  }
 
   node_config {
     preemptible  = true
