@@ -21,9 +21,9 @@ resource "google_container_cluster" "apps" {
 }
 
 resource "google_container_node_pool" "apps" {
-  name       = "preemptible"
-  location   = var.google_zone
-  cluster    = google_container_cluster.apps.name
+  name               = "preemptible"
+  location           = var.google_zone
+  cluster            = google_container_cluster.apps.name
   initial_node_count = 1
 
   autoscaling {
@@ -45,4 +45,3 @@ resource "google_container_node_pool" "apps" {
     ]
   }
 }
-
