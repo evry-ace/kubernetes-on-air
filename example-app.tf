@@ -15,12 +15,37 @@ resource "helm_release" "nginx_app" {
   }
 
   set {
-    name  = "ingress.hosts.0.name"
+    name  = "ingress.hostname"
+    value = ""
+  }
+
+  set {
+    name  = "ingress.hosts[0].name"
     value = "nginx-app.tietoevry.site"
   }
 
   set {
-    name  = "ingress.hosts.0.path"
+    name  = "ingress.hosts[0].path"
+    value = "/*"
+  }
+
+  set {
+    name  = "ingress.hosts[1].name"
+    value = "fredrik-app.tietoevry.site"
+  }
+
+  set {
+    name  = "ingress.hosts[1].path"
+    value = "/*"
+  }
+
+  set {
+    name  = "ingress.hosts[2].name"
+    value = "magnus-app.tietoevry.site"
+  }
+
+  set {
+    name  = "ingress.hosts[2].path"
     value = "/*"
   }
 }
