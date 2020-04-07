@@ -1,0 +1,60 @@
+# https://cert-manager.io/docs/configuration/acme/
+apiVersion: {{ default "certmanager.k8s.io/v1alpha1" .Values.acme.apiVersion }}
+kind: ClusterIssuer
+metadata:
+  name: "{{ .Values.name }}"
+spec:
+  acme:
+    server: "{{ .Values.acme.server }}"
+    email: "{{ .Values.acme.email }}"
+    privateKeySecretRef:
+      name: "{{ .Values.name }}-account-key"
+
+    solvers:
+    - selector: {}
+      {{- if .Values.acme.http01.enabled }}
+      http01:
+        ingress:
+          class: {{ .Values.acme.http01.ingressClass }}
+      {{- end }}
+      {{- if .Values.acme.dns01.enabled }}
+      dns01:
+        cnameStrategy: {{ .Values.acme.dns01.cnameStrategy }}
+        clouddns:
+          project: {{ .Values.acme.dns01.clouddns.project }}
+          {{- if .Values.acme.dns01.clouddns.accessKey }}
+          serviceAccountSecretRef:
+            name: {{ .Values.acme.dns01.clouddns.name }}
+            key: accessKey
+          {{- else if .Values.acme.dns01.clouddns.secretName }}
+          serviceAccountSecretRef:
+            name: {{ .Values.acme.dns01.clouddns.secretName }}
+            key: credentials.json
+          {{- end }}
+      {{- end }}
+
+{{- if .Values.acme.dns01.clouddns.accessKey }}
+# Secret for DNS provider used for DNS01 challenge.
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ .name }}
+  namespace: {{ $.Release.Namespace }}
+type: Opaque
+data:
+  accessKey: {{ .accessKey | b64enc }}
+{{- end }}
+
+{{- if .Values.acme.letsEncrypt.key }}
+# Secret for Let's Encrypt account.
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ .Values.acme.letsEncrypt.name }}
+  namespace: {{ .Release.Namespace }}
+type: Opaque
+data:
+  tls.key: {{ .Values.acme.letsEncrypt.key | b64enc }}
+{{- end }}

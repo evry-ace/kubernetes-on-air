@@ -1,8 +1,9 @@
 resource "helm_release" "nginx_app" {
-  name       = "nginx-app"
-  repository = "https://charts.bitnami.com/bitnami"
-  chart      = "nginx"
-  version    = "5.1.12"
+  name         = "nginx-app"
+  repository   = "https://charts.bitnami.com/bitnami"
+  chart        = "nginx"
+  version      = "5.1.12"
+  timeout      = 600
 
   set {
     name  = "service.type"
@@ -15,8 +16,18 @@ resource "helm_release" "nginx_app" {
   }
 
   set {
+    name  = "ingress.certManager"
+    value = true
+  }
+
+  set {
     name  = "ingress.hostname"
     value = ""
+  }
+
+  set_string {
+    name  = "ingress.annotations.cert-manager\\.io/cluster-issuer"
+    value = "letsencrypt"
   }
 
   set {
@@ -47,5 +58,45 @@ resource "helm_release" "nginx_app" {
   set {
     name  = "ingress.hosts[2].path"
     value = "/*"
+  }
+
+  set {
+    name  = "ingress.hosts[3].name"
+    value = "tomstian-app.tietoevry.site"
+  }
+
+  set {
+    name  = "ingress.hosts[3].path"
+    value = "/*"
+  }
+
+  set {
+    name  = "ingress.tls[0].secretName"
+    value = "example-app-tls"
+  }
+
+  set {
+    name  = "ingress.tls[0].hosts[0]"
+    value = "nginx-app.tietoevry.site"
+  }
+
+  set {
+    name  = "ingress.tls[0].hosts[0]"
+    value = "nginx-app.tietoevry.site"
+  }
+
+  set {
+    name  = "ingress.tls[0].hosts[1]"
+    value = "fredrik-app.tietoevry.site"
+  }
+
+  set {
+    name  = "ingress.tls[0].hosts[2]"
+    value = "magnus-app.tietoevry.site"
+  }
+
+  set {
+    name  = "ingress.tls[0].hosts[3]"
+    value = "tomstian-app.tietoevry.site"
   }
 }

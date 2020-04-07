@@ -1,0 +1,23 @@
+name: letsencrypt
+
+acme:
+  server: https://acme-v02.api.letsencrypt.org/directory
+  email: hans.flaatten@evry.com
+  apiVersion: cert-manager.io/v1alpha3
+
+  letsEncrypt:
+    name: lets-encrypt
+    key:
+
+  http01:
+    enabled: true
+    ingressClass: gce
+
+  dns01:
+    enabled: true
+    cnameStrategy: Follow
+    clouddns:
+      name: clouddns
+      # project:
+      # accessKey:
+      # secretName:

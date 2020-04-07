@@ -1,5 +1,6 @@
 resource "google_project_service" "cloudresourcemanager" {
-  service = "cloudresourcemanager.googleapis.com"
+  service            = "cloudresourcemanager.googleapis.com"
+  disable_on_destroy = false
 }
 
 resource "google_service_account" "external_dns" {
@@ -7,12 +8,9 @@ resource "google_service_account" "external_dns" {
   display_name = "Kubernetes external-dns service account"
 }
 
-resource "google_project_iam_binding" "external_dns" {
-  role               = "roles/dns.admin"
-
-  members = [
-    "serviceAccount:${google_service_account.external_dns.email}",
-  ]
+resource "google_project_iam_member" "external_dns" {
+  role   = "roles/dns.admin"
+  member = "serviceAccount:${google_service_account.external_dns.email}"
 
   depends_on = [google_project_service.cloudresourcemanager]
 }
@@ -32,12 +30,13 @@ resource "kubernetes_secret" "external_dns" {
   }
 }
 
-resource "helm_release" "external_dns" {
-  name       = "external-dns"
-  repository = "https://charts.bitnami.com/bitnami"
-  chart      = "external-dns"
-  version    = "2.20.10"
-  namespace  = "kube-system"
+resource "helm_release" "external_dns2" {
+  name         = "external-dns2"
+  repository   = "https://charts.bitnami.com/bitnami"
+  chart        = "external-dns"
+  version      = "2.20.10"
+  namespace    = "kube-system"
+  timeout      = 600
 
   set {
     name  = "provider"
