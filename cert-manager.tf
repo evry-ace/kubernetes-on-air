@@ -39,11 +39,16 @@ resource "helm_release" "cert_manager" {
   name         = "cert-manager"
   repository   = "https://charts.jetstack.io"
   chart        = "cert-manager"
-  version      = "v0.14.1"
+  version      = "v0.15.0-alpha.0"
   namespace    = kubernetes_namespace.cert_manager.metadata[0].name
   timeout      = 1200
 
   depends_on = [google_container_node_pool.apps]
+
+  set {
+    name  = "installCRDs"
+    value = true
+  }
 
   set {
     name  = "ingressShim.defaultIssuerName"
