@@ -31,12 +31,12 @@ resource "kubernetes_secret" "external_dns" {
 }
 
 resource "helm_release" "external_dns2" {
-  name         = "external-dns2"
-  repository   = "https://charts.bitnami.com/bitnami"
-  chart        = "external-dns"
-  version      = "2.20.10"
-  namespace    = "kube-system"
-  timeout      = 600
+  name       = "external-dns2"
+  repository = "https://charts.bitnami.com/bitnami"
+  chart      = "external-dns"
+  version    = "2.20.10"
+  namespace  = "kube-system"
+  timeout    = 600
 
   depends_on = [google_container_node_pool.apps]
 
