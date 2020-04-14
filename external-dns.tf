@@ -41,6 +41,11 @@ resource "helm_release" "external_dns2" {
   depends_on = [google_container_node_pool.apps]
 
   set {
+    name  = "policy"
+    value = "sync"
+  }
+
+  set {
     name  = "provider"
     value = "google"
   }
