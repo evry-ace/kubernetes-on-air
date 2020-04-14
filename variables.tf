@@ -3,9 +3,9 @@ variable "google_project" {
 }
 
 variable "google_region" {
-  default = "europe-north1"
+  default = "europe-west1"
 }
 
 variable "google_zone" {
-  default = "europe-north1-a"
+  default = "europe-west1-b"
 }
