@@ -4,5 +4,5 @@ steps:
   args: ["build", "-t", "eu.gcr.io/evry-flaatten/go-hello-world:$SHORT_SHA", "apps/hello-world/"]
   # push container image
 - name: "gcr.io/cloud-builders/docker"
-  args: ["push", "gcr.io/evry-flaatten/go-hello-world:$SHORT_SHA"]
+  args: ["push", "eu.gcr.io/evry-flaatten/go-hello-world:$SHORT_SHA"]
   # deploy container image to GKE
