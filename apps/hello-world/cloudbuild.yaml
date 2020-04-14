@@ -14,4 +14,7 @@ steps:
     - 'apps'
     - '--zone=europe-west1-b'
     - '--project=evry-flaatten'
-
+  # list helm deploys
+- name: "alpine/helm:3.1.2"
+  args:
+    - 'list'
