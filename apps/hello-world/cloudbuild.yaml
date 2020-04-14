@@ -5,4 +5,13 @@ steps:
   # push container image
 - name: "gcr.io/cloud-builders/docker"
   args: ["push", "eu.gcr.io/evry-flaatten/go-hello-world:$SHORT_SHA"]
-  # deploy container image to GKE
+  # get cluster credentials
+- name: "gcr.io/cloud-builders/gcloud"
+  args:
+    - 'container'
+    - 'clusters'
+    - 'get-credentials'
+    - 'apps'
+    - '--zone=europe-west1-b'
+    - '--project=evry-flaatten'
+
