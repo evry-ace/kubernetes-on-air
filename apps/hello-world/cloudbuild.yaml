@@ -1,11 +1,12 @@
 steps:
   # build the container image
 - name: "gcr.io/cloud-builders/docker"
-  args: ["build", "-t", "eu.gcr.io/evry-flaatten/go-hello-world:$SHORT_SHA", "apps/hello-world/"]
+  args: ["build", "-t", "eu.gcr.io/$PROJECT_ID/go-hello-world:$SHORT_SHA", "apps/hello-world/"]
   # push container image
 - name: "gcr.io/cloud-builders/docker"
-  args: ["push", "eu.gcr.io/evry-flaatten/go-hello-world:$SHORT_SHA"]
-  # get cluster credentials
+  args: ["push", "eu.gcr.io/$PROJECT_ID/go-hello-world:$SHORT_SHA"]
+
+# get cluster credentials
 - name: "gcr.io/cloud-builders/gcloud"
   args:
     - 'container'
@@ -13,8 +14,36 @@ steps:
     - 'get-credentials'
     - 'apps'
     - '--zone=europe-west1-b'
-    - '--project=evry-flaatten'
-  # list helm deploys
-- name: "alpine/helm:3.1.2"
+    - '--project=$PROJECT_ID'
+  env:
+    - KUBECONFIG=/workspace/.kube/config
+
+- name: "alpine"
   args:
-    - 'list'
+    - 'ls'
+    - '-laLR'
+    - '/workspace'
+
+- name: "alpine"
+  args:
+    - 'cat'
+    - '/workspace/.kube/config'
+  env:
+    - KUBECONFIG=/workspace/.kube/config
+
+# list helm deploys
+- name: "gcr.io/$PROJECT_ID/helm:3.1.2"
+  args:
+    - 'upgrade'
+    - '--atomic'
+    - '--install'
+    - '--debug'
+    - '--set'
+    - 'image.repository=eu.gcr.io/$PROJECT_ID/go-hello-world'
+    - '--set'
+    - 'image.tag=$SHORT_SHA'
+    - '--reuse-values'
+    - 'go-hello-world'
+    - './charts/go-hello-world'
+  env:
+    - KUBECONFIG=/workspace/.kube/config
