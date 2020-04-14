@@ -43,6 +43,8 @@ resource "helm_release" "cert_manager" {
   namespace    = kubernetes_namespace.cert_manager.metadata[0].name
   timeout      = 1200
 
+  depends_on = [google_container_node_pool.apps]
+
   set {
     name  = "ingressShim.defaultIssuerName"
     value = "letsencrypt"

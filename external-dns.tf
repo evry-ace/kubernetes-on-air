@@ -38,6 +38,8 @@ resource "helm_release" "external_dns2" {
   namespace    = "kube-system"
   timeout      = 600
 
+  depends_on = [google_container_node_pool.apps]
+
   set {
     name  = "provider"
     value = "google"

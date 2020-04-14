@@ -5,6 +5,8 @@ resource "helm_release" "nginx_app" {
   version      = "5.1.12"
   timeout      = 600
 
+  depends_on = [google_container_node_pool.apps]
+
   set {
     name  = "service.type"
     value = "NodePort"
