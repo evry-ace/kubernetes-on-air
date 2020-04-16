@@ -1,18 +1,25 @@
 terraform {
   required_providers {
-    google     = "~> 3"
-    external   = "~> 1"
-    helm       = "~> 1"
-    kubernetes = "~> 1"
-    local      = "~> 1"
-    null       = "~> 2"
-    random     = "~> 2"
-    template   = "~> 2"
-    tls        = "~> 2"
+    google      = "~> 3"
+    google-beta = "~> 3"
+    external    = "~> 1"
+    helm        = "~> 1"
+    kubernetes  = "~> 1"
+    local       = "~> 1"
+    null        = "~> 2"
+    random      = "~> 2"
+    template    = "~> 2"
+    tls         = "~> 2"
   }
 }
 
 provider "google" {
+  project = var.google_project
+  region  = var.google_region
+  zone    = var.google_zone
+}
+
+provider "google-beta" {
   project = var.google_project
   region  = var.google_region
   zone    = var.google_zone

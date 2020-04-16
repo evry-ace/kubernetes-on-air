@@ -1,7 +1,29 @@
+resource "google_cloudbuild_trigger" "go_app" {
+  provider = google-beta
+
+  github {
+    owner = "evry-ace"
+    name  = "kubernetes-on-air"
+
+    push {
+      branch = "master"
+    }
+  }
+
+  included_files = ["apps/hello-world/**"]
+
+  substitutions = {
+    _FOO = "bar"
+    _BAZ = "qux"
+  }
+
+  filename = "apps/hello-world/cloudbuild.yaml"
+}
+
 resource "helm_release" "go_app" {
-  name       = "go-hello-world"
-  chart      = "./charts/go-hello-world"
-  timeout    = 600
+  name    = "go-hello-world"
+  chart   = "./charts/go-hello-world"
+  timeout = 600
 
   depends_on = [google_container_node_pool.apps]
 
