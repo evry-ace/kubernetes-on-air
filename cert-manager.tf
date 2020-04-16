@@ -21,7 +21,8 @@ resource "kubernetes_namespace" "cert_manager" {
     }
 
     labels = {
-      "istio-injection" = "disabled"
+      "istio-injection"    = "disabled"
+      "kiali.io/member-of" = "istio-system"
     }
 
     name = "cert-manager"

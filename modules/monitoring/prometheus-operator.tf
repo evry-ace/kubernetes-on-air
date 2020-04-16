@@ -3,7 +3,8 @@ resource "kubernetes_namespace" "prometheus" {
     name = "monitoring"
 
     labels = {
-      "istio-injection" = "disabled"
+      "istio-injection"    = "disabled"
+      "kiali.io/member-of" = "istio-system"
     }
   }
 }
