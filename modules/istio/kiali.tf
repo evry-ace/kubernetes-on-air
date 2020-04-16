@@ -16,7 +16,7 @@ resource "helm_release" "kiali_operator" {
 
   set {
     name  = "kiali.spec.api.namespaces.exclude"
-    value = "{cert-manager,chaoskube,kube-system,kube-public,monitoring,nats-io}"
+    value = "{cert-manager,kube-system,kube-public,monitoring}"
   }
 
   set {
