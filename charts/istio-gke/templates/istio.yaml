@@ -1,0 +1,209 @@
+apiVersion: istio.banzaicloud.io/v1beta1
+kind: Istio
+metadata:
+  name: {{ include "istio-gke.fullname" . }}
+  labels:
+    controller-tools.k8s.io: "1.0"
+    app.kubernetes.io/name: {{ include "istio-gke.name" . }}
+    helm.sh/chart: {{ include "istio-gke.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  autoInjectionNamespaces:
+    {{- toYaml .Values.istio.autoInjectionNamespaces | nindent 4 }}
+  citadel:
+    enableNamespacesByDefault: true
+    enabled: true
+    image: docker.io/istio/citadel:{{ .Values.istio.version }}
+  defaultPodDisruptionBudget:
+    enabled: false
+  defaultResources:
+    requests:
+      cpu: 10m
+  galley:
+    configValidation: true
+    enableAnalysis: false
+    enableServiceDiscovery: false
+    enabled: true
+    image: docker.io/istio/galley:{{ .Values.istio.version }}
+    replicaCount: 1
+  gateways:
+    egress:
+      enabled: {{ .Values.istio.gateways.egress.enabled }}
+      maxReplicas: 5
+      minReplicas: 1
+      ports:
+      - name: http2
+        port: 80
+        protocol: TCP
+        targetPort: 80
+      - name: https
+        port: 443
+        protocol: TCP
+        targetPort: 443
+      - name: tls
+        port: 15443
+        protocol: TCP
+        targetPort: 15443
+      replicaCount: 1
+      sds:
+        enabled: {{ .Values.istio.gateways.egress.sds.enabled }}
+        image: docker.io/istio/node-agent-k8s:{{ .Values.istio.version }}
+      serviceType: {{ .Values.istio.gateways.egress.serviceType }}
+    enabled: {{ .Values.istio.gateways.enabled }}
+    ingress:
+      enabled: {{ .Values.istio.gateways.ingress.enabled }}
+      loadBalancerIP: {{ .Values.istio.gateways.ingress.loadBalancerIP }}
+      maxReplicas: 5
+      minReplicas: 1
+      ports:
+      - name: status-port
+        port: 15020
+        targetPort: 15020
+      - name: http2
+        nodePort: 31380
+        port: 80
+        targetPort: 80
+      - name: https
+        nodePort: 31390
+        port: 443
+        targetPort: 0
+      - name: tls
+        port: 15443
+        targetPort: 15443
+      replicaCount: 1
+      sds:
+        enabled: {{ .Values.istio.gateways.ingress.sds.enabled }}
+        image: docker.io/istio/node-agent-k8s:{{ .Values.istio.version }}
+      serviceType: {{ .Values.istio.gateways.ingress.serviceType }}
+    k8singress:
+      enableHttps: false
+      enabled: false
+  imagePullPolicy: IfNotPresent
+  includeIPRanges: '*'
+  istioCoreDNS:
+    enabled: false
+  logging:
+    level: default:info
+  meshExpansion: false
+  mixer:
+    enabled: true
+    image: docker.io/istio/mixer:{{ .Values.istio.version }}
+    maxReplicas: 5
+    minReplicas: 1
+    replicaCount: 1
+    reportBatchMaxEntries: 100
+    reportBatchMaxTime: 1s
+    sessionAffinityEnabled: false
+    stdioAdapterEnabled: false
+  mixerlessTelemetry:
+    enabled: false
+  mtls: {{ .Values.istio.mtls }}
+  multiMesh: false
+  nodeAgent:
+    enabled: false
+    image: docker.io/istio/node-agent-k8s:{{ .Values.istio.version }}
+  outboundTrafficPolicy:
+    mode: ALLOW_ANY
+  pilot:
+    enableProtocolSniffingInbound: false
+    enableProtocolSniffingOutbound: true
+    enabled: true
+    image: docker.io/istio/pilot:{{ .Values.istio.version }}
+    maxReplicas: 5
+    minReplicas: 1
+    replicaCount: 1
+    sidecar: true
+    traceSampling: 1
+  policy:
+    checksEnabled: {{ .Values.istio.policy.checksEnabled }}
+    enabled: {{ .Values.istio.policy.enabled }}
+    image: docker.io/istio/mixer:{{ .Values.istio.version }}
+    maxReplicas: 5
+    minReplicas: 1
+    replicaCount: 1
+  proxy:
+    accessLogEncoding: TEXT
+    accessLogFile: /dev/stdout
+    accessLogFormat: ""
+    clusterDomain: cluster.local
+    componentLogLevel: misc:error
+    dnsRefreshRate: 300s
+    envoyAccessLogService:
+      enabled: false
+      tcpKeepalive:
+        interval: 10s
+        probes: 3
+        time: 10s
+      tlsSettings:
+        mode: DISABLE
+    envoyMetricsService:
+      enabled: false
+      tcpKeepalive:
+        interval: 10s
+        probes: 3
+        time: 10s
+      tlsSettings:
+        mode: DISABLE
+    envoyStatsD:
+      enabled: false
+    image: docker.io/istio/proxyv2:{{ .Values.istio.version }}
+    logLevel: warning
+    protocolDetectionTimeout: 100ms
+    resources:
+      limits:
+        cpu: "2"
+        memory: 1Gi
+      requests:
+        cpu: 100m
+        memory: 128Mi
+  proxyInit:
+    image: docker.io/istio/proxy_init:{{ .Values.istio.version }}
+  sds:
+    enabled: false
+    tokenAudience: istio-ca
+  sidecarInjector:
+    autoInjectionPolicyEnabled: {{ .Values.istio.sidecarInjector.autoInjectionPolicyEnabled }}
+    enabled: {{ .Values.istio.sidecarInjector.enabled }}
+    image: docker.io/istio/sidecar_injector:{{ .Values.istio.version }}
+    init:
+      resources:
+        limits:
+          cpu: 100m
+          memory: 50Mi
+        requests:
+          cpu: 10m
+          memory: 10Mi
+    initCNIConfiguration:
+      binDir: /home/kubernetes/bin
+      confDir: /etc/cni/net.d
+      enabled: {{ .Values.istio.sidecarInjector.initCNIConfiguration.enabled }}
+      excludeNamespaces:
+      - istio-system
+      image: docker.io/istio/install-cni:{{ .Values.istio.version }}
+      logLevel: info
+    replicaCount: 1
+    rewriteAppHTTPProbe: {{ .Values.istio.sidecarInjector.rewriteAppHTTPProbe }}
+  telemetry:
+    enabled: true
+    image: docker.io/istio/mixer:{{ .Values.istio.version }}
+    maxReplicas: 5
+    minReplicas: 1
+    replicaCount: 1
+    reportBatchMaxEntries: 100
+    reportBatchMaxTime: 1s
+    sessionAffinityEnabled: false
+  tracing:
+    enabled: {{ .Values.istio.tracing.enabled }}
+    tracer: {{ .Values.istio.tracing.tracer }}
+    datadog: {}
+    lightstep: {}
+    stackdriver:
+      debug: {{ .Values.istio.tracing.stackdriver.debug }}
+      maxNumberOfAnnotations: {{ .Values.istio.tracing.stackdriver.maxNumberOfAnnotations }}
+      maxNumberOfAttributes: {{ .Values.istio.tracing.stackdriver.maxNumberOfAttributes }}
+      maxNumberOfMessageEvents: {{ .Values.istio.tracing.stackdriver.maxNumberOfMessageEvents }}
+    zipkin: {}
+  trustDomain: cluster.local
+  useMCP: true
+  version: {{ .Values.istio.version }}

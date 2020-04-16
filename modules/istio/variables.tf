@@ -1,0 +1,17 @@
+variable "gke_nodepool" {}
+variable "istio_operator_namespace" {}
+variable "istio_operator_chart_version" {}
+variable "istio_operator_version" {}
+variable "istio_enabled" {}
+variable "istio_namespace" {}
+variable "istio_major" {}
+variable "istio_version" {}
+variable "istio_mtls_enabled" {}
+variable "kiali_enabled" {}
+variable "kiali_version" {}
+variable "kiali_ingress_host" {}
+variable "kiali_operator_version" {}
+variable "istio_bookinfo_enabled" {}
+variable "istio_bookinfo_namespace" {}
+variable "istio_bookinfo_version" {}
+variable "istio_bookinfo_hostname" {}

@@ -9,3 +9,7 @@ variable "google_region" {
 variable "google_zone" {
   default = "europe-west1-b"
 }
+
+variable "ingress_dns" {
+  default = "tietoevry.site"
+}

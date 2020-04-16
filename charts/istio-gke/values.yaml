@@ -1,0 +1,47 @@
+# Default values for istio-gke.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+istio:
+  version: 1.4.0
+  mtls: false
+
+  autoInjectionNamespaces:
+    - default
+
+  sidecarInjector:
+    enabled: true
+
+    rewriteAppHTTPProbe: true
+    autoInjectionPolicyEnabled: true
+
+    initCNIConfiguration:
+      enabled: true
+
+  gateways:
+    enabled: true
+    egress:
+      enabled: true
+      sds:
+        enabled: true
+      serviceType: "ClusterIP"
+    ingress:
+      enabled: true
+      sds:
+        enabled: true
+      serviceType: "LoadBalancer"
+      loadBalancerIP: ""
+
+  policy:
+    enabled: true
+    checksEnabled: true
+
+  tracing:
+    enabled: true
+    tracer: stackdriver
+    stackdriver:
+      debug: false
+      maxNumberOfAnnotations: 200
+      maxNumberOfAttributes: 200
+      maxNumberOfMessageEvents: 200
+
