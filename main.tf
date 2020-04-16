@@ -13,12 +13,12 @@ module "istio" {
   istio_version      = "1.4.7"
   istio_mtls_enabled = false
 
-  kiali_enabled          = false
+  kiali_enabled          = true
   kiali_operator_version = "1.2.0"
   kiali_version          = "1.16.0"
   kiali_ingress_host     = "kiali.${var.ingress_dns}"
 
-  istio_bookinfo_enabled   = false
+  istio_bookinfo_enabled   = true
   istio_bookinfo_hostname  = "bookinfo.${var.ingress_dns}"
   istio_bookinfo_namespace = "bookinfo"
   istio_bookinfo_version   = "1.2.2"

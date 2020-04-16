@@ -38,6 +38,11 @@ resource "helm_release" "istio_bookinfo" {
   }
 
   set {
+    name  = "gateway.tls.acme.certManager.version"
+    value = "cert-manager.io/v1alpha3"
+  }
+
+  set {
     name  = "gateway.httpsRedirect"
     value = true
   }
