@@ -1,3 +1,7 @@
+module "monitoring" {
+  source = "./modules/monitoring"
+}
+
 module "istio" {
   source = "./modules/istio"
 
