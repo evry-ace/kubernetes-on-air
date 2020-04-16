@@ -46,6 +46,11 @@ resource "helm_release" "external_dns2" {
   }
 
   set {
+    name  = "sources"
+    value = "{ingress,service,istio-gateway}"
+  }
+
+  set {
     name  = "provider"
     value = "google"
   }
