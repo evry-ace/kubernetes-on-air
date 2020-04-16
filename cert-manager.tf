@@ -20,6 +20,10 @@ resource "kubernetes_namespace" "cert_manager" {
       name = "cert-manager"
     }
 
+    labels = {
+      "istio-injection" = "disabled"
+    }
+
     name = "cert-manager"
   }
 }
