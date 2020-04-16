@@ -1,0 +1,222 @@
+---
+global:
+  rbac:
+    enabled: true
+commonLabels:
+  prometheus: default
+defaultRules:
+  labels:
+    alertmanager: default
+  rules:
+    alertmanager: true
+    etcd: false
+    general: true
+    k8s: true
+    kubeApiserver: false
+    kubeApiserverError: true
+    kubePrometheusNodeAlerting: true
+    kubePrometheusNodeRecording: true
+    kubernetesAbsent: false
+    kubernetesApps: true
+    kubernetesResources: false
+    kubernetesStorage: true
+    kubernetesSystem: false # Override in /root/config/alertrules/kubernetes_sytem.yaml
+    kubeScheduler: false
+    network: false # Override in /root/config/alertrules/kubernetes_nodes.yaml
+    node: false # Override in /root/config/alertrules/kubernetes_nodes.yaml
+    prometheus: true
+    prometheusOperator: true
+    time: false # Override in /root/config/alertrules/kubernetes_nodes.yaml
+
+alertmanager:
+  service:
+    type: NodePort
+  ingress:
+    enabled: true
+    paths: ["/*"]
+    hosts:
+      - alertmanager.${external_dns_ingress_dns}
+    tls:
+      - secretName: ${alertmanager_tls_secret_name}
+        hosts:
+          - alertmanager.${external_dns_ingress_dns}
+    annotations:
+      kubernetes.io/ingress.class: gce
+      cert-manager.io/issuer-kind: ClusterIssuer
+      cert-manager.io/cluster-issuer: letsencrypt
+      external-dns.alpha.kubernetes.io/hostname: alertmanager.${external_dns_ingress_dns}
+  alertmanagerSpec:
+    externalUrl: ""
+    routePrefix: /
+    retention: 720h
+    storage:
+      volumeClaimTemplate:
+        spec:
+          # storageClassName: "-"
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 5Gi
+
+prometheusOperator:
+  createCustomResource: ${prometheus_operator_create_crd}
+  configReloaderCpu: 130m
+  resources:
+    limits:
+      cpu: 700m
+      memory: 100Mi
+    requests:
+      cpu: 700m
+      memory: 100Mi
+  tlsProxy:
+    resources:
+      limits:
+        cpu: 50m
+        memory: 50Mi
+      requests:
+        cpu: 50m
+        memory: 50Mi
+
+prometheus:
+  service:
+    type: NodePort
+    nodePort: 32090
+  ingress:
+    enabled: true
+    paths: ["/*"]
+    hosts:
+      - prometheus.${external_dns_ingress_dns}
+    tls:
+      - secretName: ${prometheus_tls_secret_name}
+        hosts:
+          - prometheus.${external_dns_ingress_dns}
+    annotations:
+      kubernetes.io/ingress.class: gce
+      cert-manager.io/issuer-kind: ClusterIssuer
+      cert-manager.io/cluster-issuer: letsencrypt
+      external-dns.alpha.kubernetes.io/hostname: prometheus.${external_dns_ingress_dns}
+  additionalServiceMonitors:
+    - name: istio
+      selector: {}
+      matchExpressions:
+        - {key: istio, operator: In, values: [pilot, mixer]}
+      namespaceSelector:
+        matchNames:
+          - istio-system
+      jobLabel: istio
+      endpoints:
+        - port: prometheus
+          interval: 5s
+        - port: http-monitoring
+          interval: 5s
+        - port: statsd-prom
+          interval: 5s
+
+  prometheusSpec:
+    externalUrl: ""
+    routePrefix: /
+    retention: 30d
+    retentionSize: 75GB
+    secrets: ${istio_secret}
+    additionalScrapeConfigs:
+      - job_name: 'envoy-stats'
+        metrics_path: /stats/prometheus
+        kubernetes_sd_configs:
+          - role: pod
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_pod_container_port_name]
+            action: keep
+            regex: '.*-envoy-prom'
+          - source_labels: [__address__, __meta_kubernetes_pod_annotation_prometheus_io_port]
+            action: replace
+            regex: ([^:]+)(?::\d+)?;(\d+)
+            replacement: $1:15090
+            target_label: __address__
+          - action: labelmap
+            regex: __meta_kubernetes_pod_label_(.+)
+          - source_labels: [__meta_kubernetes_namespace]
+            action: replace
+            target_label: namespace
+          - source_labels: [__meta_kubernetes_pod_name]
+            action: replace
+            target_label: pod_name
+    ruleNamespaceSelector: {}
+    serviceMonitorSelector:
+      matchLabels:
+        prometheus: default
+    ruleSelector:
+      matchLabels:
+        alertmanager: default
+    #resources:
+    #  limits:
+    #    cpu: 1300m
+    #    memory: 8Gi
+    #  requests:
+    #    cpu: 1300m
+    #    memory: 2Gi
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          # storageClassName: "-"
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 100Gi
+
+grafana:
+  enabled: true
+  rbac:
+    create: true
+  adminUser: admin
+  #adminPassword: admin
+  grafana.ini:
+    auth.anonymous:
+      enabled: true
+      org_name: Bulderbank
+  persistence:
+    enabled: true
+    storageClassName: standard
+    accessModes:
+      - ReadWriteOnce
+    size: 8Gi
+  env:
+    GF_AUTH_ANONYMOUS_ENABLED: true
+    GF_AUTH_ANONYMOUS_ORG_NAME: Main Org.
+    GF_AUTH_ANONYMOUS_ORG_ROLE: Editor
+  service:
+    type: NodePort
+  ingress:
+    enabled: true
+    path: "/*"
+    hosts:
+      - grafana.${external_dns_ingress_dns}
+    tls:
+      - secretName: ${grafana_tls_secret_name}
+        hosts:
+          - grafana.${external_dns_ingress_dns}
+    annotations:
+      kubernetes.io/ingress.class: gce
+      cert-manager.io/issuer-kind: ClusterIssuer
+      cert-manager.io/cluster-issuer: letsencrypt
+      external-dns.alpha.kubernetes.io/hostname: grafana.${external_dns_ingress_dns}
+  sidecar:
+    dashboards:
+      enabled: true
+      label: grafana_dashboard
+      searchNamespace: ALL
+
+coreDns:
+  enabled: false
+kubeDns:
+  enabled: true
+  service:
+    selector:
+      k8s-app: kubedns
+kubeScheduler:
+  enabled: false
+kubeApi:
+  enabled: false
+kubeControllerManager:
+  enabled: false
+kubeEtcd:
+  enabled: false
