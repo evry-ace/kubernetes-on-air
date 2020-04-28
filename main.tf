@@ -27,3 +27,7 @@ module "istio" {
   istio_bookinfo_namespace = "bookinfo"
   istio_bookinfo_version   = "1.2.2"
 }
+
+module "aks" {
+  source = "./modules/aks"
+}

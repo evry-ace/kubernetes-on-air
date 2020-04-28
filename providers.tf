@@ -1,5 +1,6 @@
 terraform {
   required_providers {
+    azurerm     = "~> 2"
     google      = "~> 3"
     google-beta = "~> 3"
     external    = "~> 1"
@@ -11,6 +12,10 @@ terraform {
     template    = "~> 2"
     tls         = "~> 2"
   }
+}
+
+provider "azurerm" {
+  features {}
 }
 
 provider "google" {
