@@ -11,3 +11,6 @@ output "email" {
   value = google_service_account.sa.email
 }
 
+output "secret_name" {
+  value = var.secret_name
+}

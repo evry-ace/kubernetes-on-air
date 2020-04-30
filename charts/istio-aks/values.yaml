@@ -1,0 +1,47 @@
+# Default values for istio-gke.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+istio:
+  version: 1.5.1
+
+  meshPolicy:
+    mtlsMode: PERMISSIVE
+
+  autoInjectionNamespaces:
+    - default
+
+  autoMtls: true
+
+  sds:
+    enabled: true
+
+  sidecarInjector:
+    enabled: true
+
+    rewriteAppHTTPProbe: true
+    autoInjectionPolicyEnabled: true
+
+  citadel:
+    enabled: true
+
+  gateways:
+    enabled: true
+    egress:
+      enabled: true
+      sds:
+        enabled: true
+      serviceType: "ClusterIP"
+    ingress:
+      enabled: true
+      serviceType: "LoadBalancer"
+      loadBalancerIP: ""
+    k8singress:
+      enabled: false
+
+  policy:
+    enabled: true
+
+  tracing:
+    enabled: false
+    tracer: zipkin
