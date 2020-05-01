@@ -4,11 +4,11 @@ resource "azurerm_resource_group" "example" {
 }
 
 resource "azurerm_container_registry" "example" {
-  name                     = "evryflaatten"
-  location                 = azurerm_resource_group.example.location
-  resource_group_name      = azurerm_resource_group.example.name
-  sku                      = "Premium"
-  admin_enabled            = true
+  name                = "evryflaatten"
+  location            = azurerm_resource_group.example.location
+  resource_group_name = azurerm_resource_group.example.name
+  sku                 = "Premium"
+  admin_enabled       = true
 }
 
 resource "azurerm_kubernetes_cluster" "example" {

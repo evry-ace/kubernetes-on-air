@@ -2,6 +2,16 @@ module "monitoring" {
   source = "./modules/monitoring"
 }
 
+module "external_dns" {
+  source = "./modules/external_dns"
+
+  cluster_id = google_container_node_pool.apps.name
+
+  external_dns_id            = "gke"
+  external_dns_project       = var.google_project
+  external_dns_chart_version = "2.22.1"
+}
+
 module "istio" {
   source = "./modules/istio"
 

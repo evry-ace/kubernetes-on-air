@@ -6,8 +6,6 @@ resource "google_service_account" "cert_manager" {
 resource "google_project_iam_member" "cert_manager" {
   role   = "roles/dns.admin"
   member = "serviceAccount:${google_service_account.cert_manager.email}"
-
-  depends_on = [google_project_service.cloudresourcemanager]
 }
 
 resource "google_service_account_key" "cert_manager" {
