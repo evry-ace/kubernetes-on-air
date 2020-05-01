@@ -1,9 +1,13 @@
 resource "helm_release" "nginx_app" {
+  count = var.aks_enabled && var.nginx_app_enabled ? 1 : 0
+
   name       = "nginx-app"
   repository = "https://charts.bitnami.com/bitnami"
   chart      = "nginx"
   version    = "5.1.12"
   timeout    = 600
+
+  depends_on = [azurerm_kubernetes_cluster.example[0]]
 
   set {
     name  = "service.type"

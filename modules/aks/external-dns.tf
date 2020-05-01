@@ -16,12 +16,16 @@ module "service_account" {
 }
 
 resource "helm_release" "external_dns" {
+  count = var.aks_enabled && var.external_dns_enabled ? 1 : 0
+
   name       = "external-dns"
   repository = "https://charts.bitnami.com/bitnami"
   chart      = "external-dns"
   version    = "2.22.0"
   namespace  = "kube-system"
   timeout    = 600
+
+  depends_on = [azurerm_kubernetes_cluster.example[0]]
 
   set {
     name  = "policy"

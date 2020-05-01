@@ -16,6 +16,8 @@ module "cert_manager_sa" {
 }
 
 resource "kubernetes_namespace" "cert_manager" {
+  depends_on = [azurerm_kubernetes_cluster.example[0]]
+
   metadata {
     annotations = {
       name = "cert-manager"
@@ -31,12 +33,16 @@ resource "kubernetes_namespace" "cert_manager" {
 }
 
 resource "helm_release" "cert_manager" {
+  count = var.aks_enabled && var.cert_manager_enabled ? 1 : 0
+
   name       = "cert-manager"
   repository = "https://charts.jetstack.io"
   chart      = "cert-manager"
   version    = "v0.15-alpha.3"
   namespace  = kubernetes_namespace.cert_manager.metadata[0].name
   timeout    = 1200
+
+  depends_on = [azurerm_kubernetes_cluster.example[0]]
 
   set {
     name  = "installCRDs"
@@ -50,6 +56,8 @@ resource "helm_release" "cert_manager" {
 }
 
 resource "helm_release" "letsencrypt" {
+  count = var.aks_enabled && var.cert_manager_enabled ? 1 : 0
+
   name       = "cert-manager-letsencrypt-issuer"
   chart      = "${path.root}/charts/letsencrypt/"
   namespace  = kubernetes_namespace.cert_manager.metadata[0].name
