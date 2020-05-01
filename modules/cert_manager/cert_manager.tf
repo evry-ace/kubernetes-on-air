@@ -1,15 +1,18 @@
-resource "google_service_account" "cert_manager" {
-  account_id   = "cert-manager"
-  display_name = "Kubernetes cert-manager service account"
-}
+module "cert_manager_sa" {
+  source = "../service_account"
 
-resource "google_project_iam_member" "cert_manager" {
-  role   = "roles/dns.admin"
-  member = "serviceAccount:${google_service_account.cert_manager.email}"
-}
+  id      = "cert-manager-${var.cert_manager_id}-sa"
+  name    = "cert-manager-${var.cert_manager_id}-sa"
+  project = var.cert_manager_project
 
-resource "google_service_account_key" "cert_manager" {
-  service_account_id = google_service_account.cert_manager.name
+  roles = [{
+    project = var.cert_manager_project
+    role    = "roles/dns.admin"
+  }]
+
+  create_secret    = var.cert_manager_enabled
+  secret_name      = "cert-manager-${var.cert_manager_id}-sa"
+  secret_namespace = kubernetes_namespace.cert_manager.metadata[0].name
 }
 
 resource "kubernetes_namespace" "cert_manager" {
@@ -27,26 +30,15 @@ resource "kubernetes_namespace" "cert_manager" {
   }
 }
 
-resource "kubernetes_secret" "cert_manager" {
-  metadata {
-    name      = "cert-manager-service-account"
-    namespace = kubernetes_namespace.cert_manager.metadata[0].name
-  }
-
-  data = {
-    "credentials.json" = base64decode(google_service_account_key.cert_manager.private_key)
-  }
-}
-
 resource "helm_release" "cert_manager" {
+  count = var.cert_manager_enabled ? 1 : 0
+
   name       = "cert-manager"
   repository = "https://charts.jetstack.io"
   chart      = "cert-manager"
-  version    = "v0.15.0-alpha.0"
+  version    = var.cert_manager_chart_version
   namespace  = kubernetes_namespace.cert_manager.metadata[0].name
   timeout    = 1200
-
-  depends_on = [google_container_node_pool.apps]
 
   set {
     name  = "installCRDs"
@@ -60,6 +52,8 @@ resource "helm_release" "cert_manager" {
 }
 
 resource "helm_release" "letsencrypt" {
+  count = var.cert_manager_enabled ? 1 : 0
+
   name       = "cert-manager-letsencrypt-issuer"
   chart      = "${path.root}/charts/letsencrypt/"
   namespace  = kubernetes_namespace.cert_manager.metadata[0].name
@@ -78,11 +72,11 @@ resource "helm_release" "letsencrypt" {
 
   set {
     name  = "acme.dns01.clouddns.project"
-    value = var.google_project
+    value = var.cert_manager_project
   }
 
   set {
     name  = "acme.dns01.clouddns.secretName"
-    value = kubernetes_secret.cert_manager.metadata[0].name
+    value = module.cert_manager_sa.secret_name
   }
 }

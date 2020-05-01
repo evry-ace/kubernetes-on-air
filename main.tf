@@ -12,6 +12,16 @@ module "external_dns" {
   external_dns_chart_version = "2.22.1"
 }
 
+module "cert_manager" {
+  source = "./modules/cert_manager"
+
+  cluster_id = google_container_node_pool.apps.name
+
+  cert_manager_id            = "gke"
+  cert_manager_project       = var.google_project
+  cert_manager_chart_version = "v0.15.0-beta.0"
+}
+
 module "istio" {
   source = "./modules/istio"
 
