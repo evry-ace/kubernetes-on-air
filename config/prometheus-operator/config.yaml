@@ -42,8 +42,8 @@ alertmanager:
           - alertmanager.${external_dns_ingress_dns}
     annotations:
       kubernetes.io/ingress.class: gce
-      cert-manager.io/issuer-kind: ClusterIssuer
       cert-manager.io/cluster-issuer: letsencrypt
+      kubernetes.io/tls-acme: "true"
       external-dns.alpha.kubernetes.io/hostname: alertmanager.${external_dns_ingress_dns}
   alertmanagerSpec:
     externalUrl: ""
@@ -92,8 +92,8 @@ prometheus:
           - prometheus.${external_dns_ingress_dns}
     annotations:
       kubernetes.io/ingress.class: gce
-      cert-manager.io/issuer-kind: ClusterIssuer
       cert-manager.io/cluster-issuer: letsencrypt
+      kubernetes.io/tls-acme: "true"
       external-dns.alpha.kubernetes.io/hostname: prometheus.${external_dns_ingress_dns}
   additionalServiceMonitors:
     - name: istio
@@ -196,8 +196,8 @@ grafana:
           - grafana.${external_dns_ingress_dns}
     annotations:
       kubernetes.io/ingress.class: gce
-      cert-manager.io/issuer-kind: ClusterIssuer
       cert-manager.io/cluster-issuer: letsencrypt
+      kubernetes.io/tls-acme: "true"
       external-dns.alpha.kubernetes.io/hostname: grafana.${external_dns_ingress_dns}
   sidecar:
     dashboards:
