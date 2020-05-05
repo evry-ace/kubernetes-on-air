@@ -19,7 +19,7 @@ module "cert_manager" {
 
   cert_manager_id            = "gke"
   cert_manager_project       = var.google_project
-  cert_manager_chart_version = "v0.15.0-beta.0"
+  cert_manager_chart_version = "v0.15.0-beta.1"
 }
 
 module "istio" {
