@@ -47,12 +47,12 @@ resource "helm_release" "go_app" {
     value = true
   }
 
-  set_string {
+  set {
     name  = "ingress.annotations.cert-manager\\.io/cluster-issuer"
     value = "letsencrypt"
   }
 
-  set_string {
+  set {
     name  = "ingress.annotations.kubernetes\\.io/tls-acme"
     value = "true"
   }

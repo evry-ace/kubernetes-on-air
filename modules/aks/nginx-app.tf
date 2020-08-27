@@ -29,12 +29,12 @@ resource "helm_release" "nginx_app" {
     value = ""
   }
 
-  set_string {
+  set {
     name  = "ingress.annotations.cert-manager\\.io/cluster-issuer"
     value = "letsencrypt"
   }
 
-  set_string {
+  set {
     name  = "ingress.annotations.kubernetes\\.io/ingress\\.class"
     value = "nginx"
   }
