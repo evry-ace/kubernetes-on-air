@@ -30,6 +30,27 @@ resource "google_container_cluster" "apps" {
       issue_client_certificate = false
     }
   }
+
+  # The maintenance policy to use for the cluster.
+  maintenance_policy {
+    daily_maintenance_window {
+      start_time = "03:00"
+    }
+  }
+
+
+  # Workload Identity allows Kubernetes service accounts to act as a
+  # user-managed Google IAM Service Account.
+  workload_identity_config {
+    identity_namespace = "${var.google_project}.svc.id.goog"
+  }
+
+  # The configuration for addons supported by GKE
+  addons_config {
+    config_connector_config {
+      enabled = true
+    }
+  }
 }
 
 resource "google_container_node_pool" "apps" {
