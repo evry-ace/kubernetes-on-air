@@ -4,10 +4,17 @@ resource "google_project_service" "stackdriver" {
 }
 
 resource "google_container_cluster" "apps" {
+  provider = google-beta
+
   name     = "apps"
   location = var.google_zone
 
-  min_master_version = "1.15.9-gke.26"
+  # Configuration options for the Release channel feature, which provide more
+  # control over automatic upgrades of your GKE clusters. When updating this
+  # field, GKE imposes specific version requirements.
+  release_channel {
+    channel = "REGULAR"
+  }
 
   # We can't create a cluster with no node pool defined, but we want to only use
   # separately managed node pools. So we create the smallest possible default
