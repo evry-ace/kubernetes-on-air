@@ -80,7 +80,6 @@ prometheusOperator:
 prometheus:
   service:
     type: NodePort
-    nodePort: 32090
   ingress:
     enabled: true
     paths: ["/*"]

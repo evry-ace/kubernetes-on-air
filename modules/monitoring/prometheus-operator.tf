@@ -25,12 +25,12 @@ data "template_file" "prometheus_operator_config" {
   }
 }
 
-resource "helm_release" "prometheus-operator" {
-  name       = "prometheus-operator"
+resource "helm_release" "kube_prometheus_stack" {
+  name       = "kube-prometheus-stack"
   namespace  = kubernetes_namespace.prometheus.metadata[0].name
-  repository = "https://kubernetes-charts.storage.googleapis.com"
-  chart      = "prometheus-operator"
-  version    = "8.13.7"
+  repository = "https://prometheus-community.github.io/helm-charts"
+  chart      = "kube-prometheus-stack"
+  version    = "11.1.1"
 
   values = [
     data.template_file.prometheus_operator_config.rendered
