@@ -1,0 +1,7 @@
+steps:
+  # build the container image
+- name: "gcr.io/cloud-builders/docker"
+  args: ["build", "-t", "eu.gcr.io/$PROJECT_ID/$_APP_NAME:$SHORT_SHA", "$_BUILD_DIR"]
+  # push container image
+- name: "gcr.io/cloud-builders/docker"
+  args: ["push", "eu.gcr.io/$PROJECT_ID/$_APP_NAME:$SHORT_SHA"]
