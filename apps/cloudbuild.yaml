@@ -1,4 +1,7 @@
 steps:
+- name: 'gcr.io/cloud-builders/git'
+  entrypoint: 'bash'
+  args: [ '-c', 'git fetch --unshallow --tags && git checkout ${BRANCH_NAME} && git submodule init && git submodule update' ]
   # build the container image
 - name: "gcr.io/cloud-builders/docker"
   args: ["build", "-t", "eu.gcr.io/$PROJECT_ID/$_APP_NAME:$SHORT_SHA", "$_BUILD_DIR"]
