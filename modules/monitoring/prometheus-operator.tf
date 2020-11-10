@@ -14,7 +14,7 @@ data "template_file" "prometheus_operator_config" {
   vars = {
     external_dns_ingress_dns = "tietoevry.site"
 
-    istio_secret = "${true ? "[istio.default, istio.prometheus-operator-prometheus]" : "[]"}"
+    istio_secret = true ? "[istio.default, istio.prometheus-operator-prometheus]" : "[]"
 
     alertmanager_tls_secret_name = "alertmanager-${replace("tietoevry.site", ".", "-")}-tls"
 

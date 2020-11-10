@@ -77,7 +77,7 @@ resource "kubernetes_ingress" "kiali" {
       "kubernetes.io/ingress.class"               = "gce"
       "cert-manager.io/cluster-issuer"            = "letsencrypt"
       "kubernetes.io/tls-acme"                    = "true"
-      "external-dns.alpha.kubernetes.io/hostname" = "${var.kiali_ingress_host}"
+      "external-dns.alpha.kubernetes.io/hostname" = var.kiali_ingress_host
     }
   }
 
