@@ -33,7 +33,7 @@ resource "google_cloudbuild_trigger" "online_boutique" {
   included_files = ["apps/online-boutique"]
 
   substitutions = {
-    _APP_NAME = "online-boutique/${local.apps[count.index]}"
+    _APP_NAME  = "online-boutique/${local.apps[count.index]}"
     _BUILD_DIR = "apps/online-boutique/src/${local.apps[count.index]}"
   }
 
