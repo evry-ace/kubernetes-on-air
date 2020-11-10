@@ -1,6 +1,8 @@
 resource "google_cloudbuild_trigger" "go_app" {
   provider = google-beta
 
+  name = "go-hello-world-build-deploy"
+
   github {
     owner = "evry-ace"
     name  = "kubernetes-on-air"
