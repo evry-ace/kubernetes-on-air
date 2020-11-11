@@ -62,7 +62,7 @@ EOF
 
   set {
     name  = "kiali.spec.external_services.prometheus.url"
-    value = "http://prometheus-operator-prometheus.monitoring:9090"
+    value = "http://kube-prometheus-stack-prometheus.monitoring:9090"
   }
 }
 
