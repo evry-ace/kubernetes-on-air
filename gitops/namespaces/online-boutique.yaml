@@ -3,4 +3,6 @@ kind: Namespace
 metadata:
   labels:
     name: online-boutique
+    istio-injection: enabled
+    kiali.io/member-of: istio-system
   name: online-boutique
